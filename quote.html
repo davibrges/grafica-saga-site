@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cotação – Grafica</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+@keyframes pageFadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+body { font-family: 'Open Sans', Arial, sans-serif; font-size: 14px; color: #333; background: #f5f7fa; line-height: 1.5; animation: pageFadeIn .35s ease; }
+a { color: inherit; text-decoration: none; }
+ul { list-style: none; }
+img { display: block; max-width: 100%; }
+input, select, button { font-family: inherit; }
+.container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+/* TOP BAR */
+.topbar { background: #f0f0f0; border-bottom: 1px solid #ddd; font-size: 12px; }
+.topbar-inner { max-width: 1200px; margin: 0 auto; padding: 7px 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.topbar-phone { display: flex; align-items: center; gap: 5px; font-weight: 600; color: #333; }
+.topbar-center { flex: 1; text-align: center; font-weight: 600; color: #444; }
+.topbar-right { display: flex; align-items: center; gap: 14px; }
+.btn-whatsapp { display: inline-flex; align-items: center; gap: 6px; background: #25D366; color: #fff; padding: 5px 12px; border-radius: 4px; font-size: 12px; font-weight: 600; }
+.btn-whatsapp:hover { background: #1da851; }
+.topbar-no-revenda { color: #e74c3c; font-weight: 600; font-size: 12px; }
+
+/* HEADER */
+.header { background: #fff; border-bottom: 2px solid #e8e8e8; padding: 16px 0; }
+.header-inner { max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; align-items: center; gap: 24px; }
+.header-logo-group { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.header-logo-group img{ height: 55px; width: 30px; }
+.search-form { flex: 1; display: flex; max-width: 560px; margin: 0 auto; }
+.search-input { flex: 1; border: 2px solid #1a3a6b; border-right: none; padding: 10px 16px; font-size: 14px; border-radius: 25px 0 0 25px; outline: none; color: #333; }
+.search-input::placeholder { color: #aaa; }
+.search-btn { background: #1a3a6b; color: #fff; border: none; padding: 10px 20px; border-radius: 0 25px 25px 0; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; }
+.search-btn:hover { background: #2a52a0; }
+.search-wrapper { position: relative; flex: 1; display: flex; max-width: 560px; margin: 0 auto; }
+.search-dropdown { position: absolute; top: calc(100% + 6px); left: 0; right: 0; background: #fff; border: 1.5px solid #ddd; border-radius: 10px; box-shadow: 0 8px 28px rgba(0,0,0,.12); z-index: 500; display: none; max-height: 380px; overflow-y: auto; }
+.search-dropdown.open { display: block; }
+.search-section-label { font-size: 11px; font-weight: 700; color: #aaa; text-transform: uppercase; letter-spacing: .6px; padding: 10px 14px 4px; }
+.search-result-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; cursor: pointer; transition: background .15s; border-bottom: 1px solid #f5f5f5; }
+.search-result-item:last-child { border-bottom: none; }
+.search-result-item:hover { background: #f0f4ff; }
+.search-result-thumb { width: 44px; height: 44px; object-fit: cover; border-radius: 5px; border: 1px solid #eee; flex-shrink: 0; }
+.search-result-info { display: flex; flex-direction: column; gap: 2px; }
+.search-result-name { font-size: 13px; font-weight: 600; color: #222; }
+.search-result-code { font-size: 11px; color: #aaa; }
+.search-no-results { padding: 18px 14px; text-align: center; color: #999; font-size: 13px; }
+.header-cart { display: flex; align-items: center; gap: 10px; cursor: pointer; flex-shrink: 0; }
+.cart-text { display: flex; flex-direction: column; line-height: 1.3; }
+.cart-label { font-weight: 700; font-size: 13px; color: #1a3a6b; }
+.cart-count { font-size: 11px; color: #888; }
+
+/* NAV */
+.nav { background: #1a1a1a; position: sticky; top: 0; z-index: 100; }
+.nav-inner { max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; align-items: stretch; justify-content: space-between; }
+.nav-left { display: flex; align-items: stretch; }
+.nav-item { display: flex; align-items: center; gap: 7px; color: #fff; padding: 13px 16px; font-size: 13px; font-weight: 600; letter-spacing: .5px; transition: background .15s; white-space: nowrap; }
+.nav-item:hover { background: #2a2a2a; }
+.nav-produtos { background: #2a3fa0; }
+.nav-produtos:hover { background: #3350c0; }
+.nav-right { display: flex; align-items: center; }
+.nav-fav { display: flex; align-items: center; gap: 6px; color: #ccc; padding: 13px 16px; font-size: 13px; }
+.nav-fav:hover { color: #fff; }
+
+/* BREADCRUMB */
+.breadcrumb-bar { background: #fff; border-bottom: 1px solid #e5e5e5; padding: 10px 0; }
+.breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #888; }
+.breadcrumb a { color: #1a3a6b; }
+.breadcrumb a:hover { text-decoration: underline; }
+
+/* PAGE */
+.page-main { padding: 32px 0 60px; }
+
+.cotacao-card {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 12px rgba(0,0,0,.07);
+  overflow: hidden;
+}
+
+/* TITLE ROW */
+.cotacao-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 28px;
+  border-bottom: 2px solid #f0f0f0;
+}
+.cotacao-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a1a1a;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.cotacao-title svg { color: #1a3a6b; }
+.cotacao-count {
+  font-size: 13px;
+  color: #888;
+  font-weight: 400;
+}
+
+/* TABLE */
+.cotacao-table-wrap { overflow-x: auto; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+thead tr {
+  background: #f8f9fb;
+  border-bottom: 2px solid #eee;
+}
+thead th {
+  padding: 14px 16px;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 700;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: .6px;
+  white-space: nowrap;
+}
+thead th:last-child { text-align: center; }
+@keyframes slideInRow {
+  from { opacity: 0; transform: translateY(-16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+tbody tr {
+  border-bottom: 1px solid #f0f0f0;
+  transition: background .15s;
+}
+tbody tr.row-enter {
+  animation: slideInRow .4s cubic-bezier(.22,1,.36,1) forwards;
+}
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: #fafbff; }
+td { padding: 16px; vertical-align: middle; }
+
+/* Product cell */
+.prod-cell { display: flex; align-items: center; gap: 14px; min-width: 220px; }
+.prod-thumb {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #eee;
+  flex-shrink: 0;
+}
+.prod-meta { display: flex; flex-direction: column; gap: 3px; }
+.prod-meta-name { font-weight: 700; font-size: 14px; color: #222; }
+.prod-meta-code { font-size: 11px; color: #aaa; }
+
+/* Inputs */
+.select-round {
+  border: 1.5px solid #ddd;
+  border-radius: 20px;
+  padding: 7px 30px 7px 12px;
+  font-size: 13px;
+  outline: none;
+  color: #444;
+  cursor: pointer;
+  appearance: none;
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 10px center;
+  min-width: 120px;
+  transition: border-color .15s;
+}
+.select-round:focus { border-color: #1a3a6b; }
+
+.qty-wrap { display: flex; align-items: center; gap: 0; width: fit-content; }
+.qty-btn {
+  background: #f5f5f5;
+  border: 1.5px solid #ddd;
+  width: 30px;
+  height: 36px;
+  font-size: 16px;
+  cursor: pointer;
+  color: #555;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .15s;
+  line-height: 1;
+}
+.qty-btn:first-child { border-radius: 20px 0 0 20px; border-right: none; }
+.qty-btn:last-child  { border-radius: 0 20px 20px 0; border-left: none; }
+.qty-btn:hover { background: #e0e0e0; }
+.qty-input {
+  width: 54px;
+  height: 36px;
+  border: 1.5px solid #ddd;
+  border-left: none;
+  border-right: none;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  outline: none;
+  color: #333;
+}
+.qty-input::-webkit-outer-spin-button,
+.qty-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+/* Delete btn */
+.btn-delete {
+  background: none;
+  border: 1.5px solid #e74c3c;
+  border-radius: 50%;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #e74c3c;
+  transition: background .15s, color .15s;
+  margin: 0 auto;
+}
+.btn-delete:hover { background: #e74c3c; color: #fff; }
+
+/* FOOTER ACTIONS */
+.cotacao-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 28px;
+  border-top: 2px solid #f0f0f0;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.btn-add-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 2px solid #1a3a6b;
+  color: #1a3a6b;
+  background: #fff;
+  padding: 11px 22px;
+  border-radius: 25px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: .3px;
+  transition: background .2s, color .2s;
+}
+.btn-add-more:hover { background: #1a3a6b; color: #fff; }
+.btn-cotar {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #1a3a6b;
+  color: #fff;
+  border: 2px solid #1a3a6b;
+  padding: 11px 32px;
+  border-radius: 25px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: .5px;
+  transition: background .2s;
+  box-shadow: 0 4px 14px rgba(26,58,107,.3);
+}
+.btn-cotar:hover { background: #2a52a0; border-color: #2a52a0; }
+
+/* EMPTY STATE */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  display: none;
+}
+.empty-state svg { margin: 0 auto 16px; opacity: .3; }
+.empty-state p { font-size: 16px; color: #999; margin-bottom: 20px; }
+.empty-state a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #1a3a6b;
+  color: #fff;
+  padding: 11px 24px;
+  border-radius: 25px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* FOOTER */
+.footer { background: #1a1a1a; }
+.footer-top { padding: 40px 0; }
+.footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1.5fr; gap: 32px; }
+.footer-logo { margin-bottom: 14px; }
+.footer-col p, .footer-col a { font-size: 13px; color: #aaa; line-height: 1.8; }
+.footer-col h4 { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 2px solid #2a52a0; }
+.footer-col ul li { margin-bottom: 6px; }
+.footer-col a:hover { color: #fff; }
+.footer-social { display: flex; gap: 10px; margin-top: 14px; }
+.social-icon { width: 34px; height: 34px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #ccc; }
+.social-icon:hover { background: #2a52a0; color: #fff; }
+.footer-bottom { background: #111; padding: 14px 0; text-align: center; }
+.footer-bottom p { font-size: 12px; color: #666; }
+
+@media (max-width: 900px) {
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+  .topbar-center { display: none; }
+  thead th:nth-child(3), td:nth-child(3) { display: none; }
+}
+@media (max-width: 600px) {
+  .header-inner { flex-wrap: wrap; }
+  .search-form { order: 3; max-width: 100%; width: 100%; }
+  .cotacao-actions { flex-direction: column; align-items: stretch; text-align: center; }
+  .btn-add-more, .btn-cotar { justify-content: center; }
+  .footer-grid { grid-template-columns: 1fr; }
+}
+  </style>
+</head>
+<body>
+  <!-- TOP BAR -->
+  <div class="topbar"> 
+    <div class="topbar-inner">
+      <span class="topbar-phone">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.29 6.29l.91-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        (34) 3235-4163
+      </span>
+      <div class="topbar-right">
+        <a href="https://wa.me/5534920002591" target="_blank" class="btn-whatsapp">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
+          Falar no WhatsApp
+        </a>
+        <span class="topbar-no-revenda">Atendemos clientes finais e revenda</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="header-logo-group">
+        <a href="grafica/home.html" class="logo">
+        </a>
+        <img src="Logo-Grafica-Saga-1.webp" style="width: 120px; height: auto;" alt="Gráfica Saga" />
+      </div>
+      <div class="search-wrapper">
+        <form class="search-form" action="#" onsubmit="buscarProduto(event)" style="flex:1;display:flex;max-width:none;margin:0;">
+          <input type="text" id="searchInput" class="search-input" placeholder="Buscar por nome ou código..." autocomplete="off" oninput="buscarProduto()" />
+          <button type="submit" class="search-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            Buscar
+          </button>
+        </form>
+        <div class="search-dropdown" id="searchDropdown"></div>
+      </div>
+      <a href="quote.html" class="header-cart">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1a3a6b" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <div class="cart-text">
+          <span class="cart-label">Cesta de Orçamento</span>
+          <span class="cart-count" id="cartCount">0 itens</span>
+        </div>
+      </a>
+    </div>
+  </header>
+
+  <!-- NAV -->
+  <nav class="nav">
+    <div class="nav-inner">
+      <div class="nav-left">
+        <a href="grafica/home.html" class="nav-item nav-produtos">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          PRODUTOS
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </a>
+        <a href="#" class="nav-item" onclick="abrirContato(event)">Contato</a>
+      </div>
+      <div class="nav-right">
+        <a href="#" class="nav-fav">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          Favoritos
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- BREADCRUMB -->
+  <div class="breadcrumb-bar">
+    <div class="container">
+      <nav class="breadcrumb">
+        <a href="grafica/home.html">Home</a><span>/</span>
+        <span>Cotação</span>
+      </nav>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <main class="page-main">
+    <div class="container">
+      <div class="cotacao-card">
+
+        <!-- Header -->
+        <div class="cotacao-header">
+          <div class="cotacao-title">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            COTAÇÃO
+            <span class="cotacao-count" id="itemCount">0 produtos</span>
+          </div>
+        </div>
+
+        <!-- Table -->
+        <div class="cotacao-table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Produto</th>
+                <th>Código</th>
+                <th>Cor</th>
+                <th>Gravação</th>
+                <th>Quantidade</th>
+                <th>Ação</th>
+              </tr>
+            </thead>
+            <tbody id="cotacaoBody">
+
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Empty state (shown when all removed) -->
+        <div class="empty-state" id="emptyState">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="1.5"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          <p>Sua cesta de orçamento está vazia.</p>
+          <a href="grafica/home.html">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+            Voltar para os produtos
+          </a>
+        </div>
+
+        <!-- Actions -->
+        <div class="cotacao-actions" id="cotacaoActions">
+          <button class="btn-add-more" onclick="location.href='grafica/home.html'">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            ADICIONAR MAIS ITENS
+          </button>
+          <button class="btn-cotar" onclick="enviarCotacao()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            COTAR
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-top">
+      <div class="container footer-grid">
+        <div class="footer-col">
+        </div>
+        <div class="footer-col">
+          <h4>Navegação</h4>
+          <ul>
+            <li><a href="#">Produtos</a></li>
+            <li><a href="#" onclick="abrirContato(event)">Contato</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Contato</h4>
+          <p>(34) 3235-4163</p>
+          <p>vendas@graficasaga.com</p>
+          <p>Av. Afonso Pena, 3268 – Bairro Brasil, Uberlândia – MG</p>
+          <p>Seg–Sex: 8h–18h</p>
+          <a href="#" class="btn-whatsapp" style="margin-top:10px">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
+            WhatsApp
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container">
+        <p>&copy; 2025 Gráfica Saga. Todos os direitos reservados.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="cart.js"></script>
+  <script src="search.js"></script>
+  <script>
+    var _DEL_BTN = '<button class="btn-delete" onclick="removeItem(this)" title="Remover"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>';
+
+    window.searchOnSelect = function(p) {
+      Cart.add({ code: p.codigo, name: p.nome, img: p.img, qty: 10 });
+      renderCotacao();
+    };
+
+    function renderCotacao() {
+      var items = Cart.getAll();
+      var tbody = document.getElementById('cotacaoBody');
+      tbody.innerHTML = '';
+      items.forEach(function(item) {
+        var tr = document.createElement('tr');
+        tr.setAttribute('data-code', item.code);
+        tr.innerHTML =
+          '<td><div class="prod-cell"><img class="prod-thumb" src="' + item.img + '" alt="' + item.name + '" />' +
+            '<div class="prod-meta"><span class="prod-meta-name">' + item.name + '</span>' +
+            '<span class="prod-meta-code">' + item.code + '</span></div></div></td>' +
+          '<td><strong>' + item.code + '</strong></td>' +
+          '<td>—</td><td>—</td>' +
+          '<td><div class="qty-wrap">' +
+            '<button class="qty-btn" onclick="changeQty(this,-1)">−</button>' +
+            '<input type="number" class="qty-input" value="' + item.qty + '" min="1" onchange="saveQty(this)" />' +
+            '<button class="qty-btn" onclick="changeQty(this,1)">+</button>' +
+          '</div></td>' +
+          '<td>' + _DEL_BTN + '</td>';
+        tbody.appendChild(tr);
+      });
+      updateCount();
+    }
+
+    function saveQty(input) {
+      var code = input.closest('tr').getAttribute('data-code');
+      Cart.updateQty(code, parseInt(input.value) || 1);
+    }
+
+    function changeQty(btn, delta) {
+      var input = btn.parentElement.querySelector('.qty-input');
+      input.value = Math.max(parseInt(input.min) || 1, (parseInt(input.value) || 1) + delta);
+      saveQty(input);
+    }
+
+    function removeItem(btn) {
+      var row = btn.closest('tr');
+      var code = row.getAttribute('data-code');
+      row.style.transition = 'opacity .25s, transform .25s';
+      row.style.opacity = '0';
+      row.style.transform = 'translateX(20px)';
+      setTimeout(function() { Cart.remove(code); renderCotacao(); }, 250);
+    }
+
+    function updateCount() {
+      var n = Cart.getAll().length;
+      document.getElementById('itemCount').textContent = n + (n === 1 ? ' produto' : ' produtos');
+      document.getElementById('cartCount').textContent = n + (n === 1 ? ' item' : ' itens');
+      document.getElementById('emptyState').style.display = n === 0 ? 'block' : 'none';
+      document.getElementById('cotacaoActions').style.display = n === 0 ? 'none' : '';
+    }
+
+    function enviarCotacao() {
+      var nome = document.getElementById('nomeCliente') ? document.getElementById('nomeCliente').value.trim() : '';
+      if (!nome) {
+        document.getElementById('nomeOverlay').style.display = 'flex';
+        document.getElementById('nomeInput').focus();
+        return;
+      }
+      mostrarResumo(nome);
+    }
+
+    function confirmarNome() {
+      var nome = document.getElementById('nomeInput').value.trim();
+      if (!nome) {
+        document.getElementById('nomeErro').style.display = 'block';
+        document.getElementById('nomeInput').focus();
+        return;
+      }
+      document.getElementById('nomeOverlay').style.display = 'none';
+      mostrarResumo(nome);
+    }
+
+    function mostrarResumo(nome) {
+      var rows = document.querySelectorAll('#cotacaoBody tr');
+      var lista = '';
+      rows.forEach(function(row) {
+        var n = row.querySelector('.prod-meta-name');
+        var c = row.querySelector('.prod-meta-code');
+        var qty = row.querySelector('.qty-input');
+        if (n) lista += '<li style="padding:8px 0;border-bottom:1px solid #f0f0f0;"><strong>' + n.textContent + '</strong> (' + (c ? c.textContent : '') + ')<br><span style="font-size:13px;color:#666;">Qtd: ' + (qty ? qty.value : '—') + '</span></li>';
+      });
+      document.getElementById('resumoNome').textContent = nome;
+      document.getElementById('resumoLista').innerHTML = lista || '<li style="color:#aaa;">Nenhum produto.</li>';
+      document.getElementById('resumoOverlay').style.display = 'flex';
+    }
+
+    (function() {
+      var c = new URLSearchParams(location.search).get('c');
+      if (c) {
+        try {
+          var incoming = JSON.parse(decodeURIComponent(c));
+          incoming.forEach(function(item) { Cart.add(item); });
+        } catch(e) {}
+      }
+    })();
+
+    renderCotacao();
+  </script>
+
+  <!-- POPUP NOME -->
+  <div id="nomeOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:2000;align-items:center;justify-content:center;">
+    <div style="background:#fff;width:420px;max-width:94vw;border-radius:12px;padding:36px 40px;position:relative;box-shadow:0 8px 40px rgba(0,0,0,.2);">
+      <h2 style="font-size:18px;font-weight:700;color:#1a3a6b;margin-bottom:8px;">Qual é o seu nome?</h2>
+      <p style="font-size:13px;color:#888;margin-bottom:20px;">Para enviar a cotação, precisamos saber com quem estamos falando.</p>
+      <input id="nomeInput" type="text" placeholder="Seu nome completo" oninput="document.getElementById('nomeErro').style.display='none'" style="width:100%;border:2px solid #1a3a6b;border-radius:8px;padding:11px 14px;font-size:15px;outline:none;margin-bottom:6px;" />
+      <p id="nomeErro" style="display:none;color:#e74c3c;font-size:12px;margin-bottom:10px;">Por favor, informe seu nome.</p>
+      <button onclick="confirmarNome()" style="width:100%;background:#1a3a6b;color:#fff;border:none;padding:13px;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;margin-top:10px;">Continuar</button>
+    </div>
+  </div>
+
+  <!-- POPUP RESUMO -->
+  <div id="resumoOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:2000;align-items:center;justify-content:center;">
+    <div style="background:#fff;width:500px;max-width:94vw;border-radius:12px;padding:36px 40px;position:relative;box-shadow:0 8px 40px rgba(0,0,0,.2);">
+      <button onclick="document.getElementById('resumoOverlay').style.display='none'" style="position:absolute;top:14px;right:18px;background:none;border:none;font-size:22px;cursor:pointer;color:#888;">&times;</button>
+      <h2 style="font-size:18px;font-weight:700;color:#1a3a6b;margin-bottom:6px;">Resumo da Cotação</h2>
+      <p style="font-size:13px;color:#888;margin-bottom:20px;">Olá, <strong id="resumoNome" style="color:#1a3a6b;"></strong>! Confira os produtos abaixo:</p>
+      <ul id="resumoLista" style="list-style:none;padding:0;margin-bottom:24px;"></ul>
+      <button onclick="finalizarCotacao()" style="width:100%;background:#1a3a6b;color:#fff;border:none;padding:13px;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;">
+        Confirmar e Enviar Cotação
+      </button>
+    </div>
+  </div>
+
+  <script>
+    function finalizarCotacao() {
+      var nome = document.getElementById('resumoNome').textContent;
+      var rows = document.querySelectorAll('#cotacaoBody tr');
+      var msg = 'Olá! Meu nome é *' + nome + '* e gostaria de solicitar uma cotação:\n\n';
+      rows.forEach(function(row, i) {
+        var n    = row.querySelector('.prod-meta-name');
+        var c    = row.querySelector('.prod-meta-code');
+        var qty  = row.querySelector('.qty-input');
+        msg += (i + 1) + '. *' + (n ? n.textContent : '') + '* (' + (c ? c.textContent : '') + ')\n';
+        msg += '   Quantidade: ' + (qty ? qty.value : '—') + ' unidades\n';
+        var rawSpecs = row.getAttribute('data-specs');
+        if (rawSpecs) {
+          var specs = JSON.parse(rawSpecs);
+          msg += '   Especificações:\n';
+          specs.forEach(function(s) { msg += '      • ' + s[0] + ': ' + s[1] + '\n'; });
+        }
+        msg += '\n';
+      });
+      msg += 'Aguardo retorno. Obrigado!';
+
+      document.getElementById('resumoOverlay').style.display = 'none';
+      var btn = document.querySelector('.btn-cotar');
+      btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> COTAÇÃO ENVIADA!';
+      btn.style.background = '#25D366';
+      btn.style.borderColor = '#25D366';
+      btn.disabled = true;
+
+      window.open('https://wa.me/5534920002591?text=' + encodeURIComponent(msg), '_blank');
+    }
+  </script>
+
+  <!-- POPUP CONTATO -->
+  <div id="contatoOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:2000;align-items:center;justify-content:center;" onclick="fecharContato(event)">
+    <div style="background:#fff;width:60%;max-width:700px;border-radius:12px;padding:40px 48px;position:relative;box-shadow:0 8px 40px rgba(0,0,0,.2);">
+      <button onclick="document.getElementById('contatoOverlay').style.display='none'" style="position:absolute;top:16px;right:20px;background:none;border:none;font-size:22px;cursor:pointer;color:#888;">&times;</button>
+      <h2 style="font-size:20px;font-weight:700;color:#1a3a6b;margin-bottom:28px;border-bottom:2px solid #e8e8e8;padding-bottom:14px;">Entre em Contato</h2>
+      <div style="display:flex;flex-direction:column;gap:18px;font-size:15px;color:#333;">
+        <div style="display:flex;align-items:center;gap:14px;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1a3a6b" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.29 6.29l.91-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          <span><strong>Telefone:</strong> (34) 3235-4163</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" style="color:#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
+          <span><strong>WhatsApp:</strong> <a href="https://wa.me/5534920002591" target="_blank" style="color:#25D366;font-weight:600;">(34) 92000-2591</a></span>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1a3a6b" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          <span><strong>E-mail:</strong> <a href="mailto:vendas@graficasaga.com" style="color:#1a3a6b;">vendas@graficasaga.com</a></span>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:14px;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1a3a6b" stroke-width="2" style="flex-shrink:0;margin-top:2px"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span><strong>Endereço:</strong> Av. Afonso Pena, 3268 – Bairro Brasil, Uberlândia – MG, 38400-710</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1a3a6b" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span><strong>Horário:</strong> Seg–Sex, 8h às 18h</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    function abrirContato(e) { e.preventDefault(); var o = document.getElementById('contatoOverlay'); o.style.display = 'flex'; }
+    function fecharContato(e) { if (e.target === document.getElementById('contatoOverlay')) document.getElementById('contatoOverlay').style.display = 'none'; }
+  </script>
+</body>
+</html>
