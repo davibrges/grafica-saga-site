@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Grafica Saga</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+@keyframes pageFadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+body { font-family: 'Open Sans', Arial, sans-serif; font-size: 14px; color: #333; background: #fff; line-height: 1.6; animation: pageFadeIn .35s ease; }
+a { color: inherit; text-decoration: none; }
+ul { list-style: none; }
+img { display: block; max-width: 100%; }
+input, select, button { font-family: inherit; }
+.container { max-width: 1200px; margin: 0 auto; padding: 0 16px; }
+
+/* TOP BAR */
+.topbar { background: #f0f0f0; border-bottom: 1px solid #ddd; font-size: 12px; color: #555; }
+.topbar-inner { max-width: 1200px; margin: 0 auto; padding: 7px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.topbar-phone { display: flex; align-items: center; gap: 5px; font-weight: 600; color: #333; white-space: nowrap;}
+.topbar-center { flex: 1; text-align: center; font-weight: 600; color: #444;}
+.topbar-right { display: flex; align-items: center; gap: 14px; white-space: nowrap;}       
+.btn-whatsapp { display: inline-flex; align-items: center; gap: 6px; background: #25D366; color: #fff; padding: 5px 12px; border-radius: 4px; font-size: 12px; font-weight: 600; transition: background .2s; }
+.btn-whatsapp:hover { background: #1da851; }
+.topbar-no-revenda { color: #e74c3c; font-weight: 600; }
+
+/* HEADER */
+.header { background: #fff; border-bottom: 2px solid #e8e8e8; padding: 16px 0; }
+.header-inner { max-width: 1200px; margin: 0 auto; padding: 0 16px; display: flex; align-items: center; gap: 24px; }
+.header-logo-group { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.header-logo-group .iso-badge { width: 52px; height: 52px; border-radius: 4px; }
+.logo img { height: 55px; width: auto; }
+.search-form { flex: 1; display: flex; max-width: 560px; margin: 0 auto; }
+.search-input { flex: 1; border: 2px solid #1a3a6b; border-right: none; padding: 10px 16px; font-size: 14px; border-radius: 25px 0 0 25px; outline: none; color: #333; }
+.search-input::placeholder { color: #aaa; }
+.search-btn { background: #1a3a6b; color: #fff; border: none; padding: 10px 20px; border-radius: 0 25px 25px 0; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; transition: background .2s; }
+.search-btn:hover { background: #2a52a0; }
+.search-wrapper { position: relative; flex: 1; display: flex; max-width: 560px; margin: 0 auto; }
+.search-dropdown { position: absolute; top: calc(100% + 6px); left: 0; right: 0; background: #fff; border: 1.5px solid #ddd; border-radius: 10px; box-shadow: 0 8px 28px rgba(0,0,0,.12); z-index: 500; display: none; max-height: 380px; overflow-y: auto; }
+.search-dropdown.open { display: block; }
+.search-section-label { font-size: 11px; font-weight: 700; color: #aaa; text-transform: uppercase; letter-spacing: .6px; padding: 10px 14px 4px; }
+.search-result-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; cursor: pointer; transition: background .15s; border-bottom: 1px solid #f5f5f5; }
+.search-result-item:last-child { border-bottom: none; }
+.search-result-item:hover { background: #f0f4ff; }
+.search-result-thumb { width: 44px; height: 44px; object-fit: cover; border-radius: 5px; border: 1px solid #eee; flex-shrink: 0; }
+.search-result-info { display: flex; flex-direction: column; gap: 2px; }
+.search-result-name { font-size: 13px; font-weight: 600; color: #222; }
+.search-result-code { font-size: 11px; color: #aaa; }
+.search-no-results { padding: 18px 14px; text-align: center; color: #999; font-size: 13px; }
+.header-cart { display: flex; align-items: center; gap: 10px; cursor: pointer; flex-shrink: 0; background: none; border: none; padding: 0; }
+.header-cart:hover .cart-label { color: #2a52a0; }
+
+/* CART DRAWER */
+.cart-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 999; opacity: 0; pointer-events: none; transition: opacity .3s; }
+.cart-overlay.open { opacity: 1; pointer-events: all; }
+.cart-drawer { position: fixed; top: 0; right: -420px; width: 420px; max-width: 100vw; height: 100vh; background: #fff; z-index: 1000; display: flex; flex-direction: column; box-shadow: -4px 0 24px rgba(0,0,0,.15); transition: right .32s cubic-bezier(.4,0,.2,1); }
+.cart-drawer.open { right: 0; }
+.cart-drawer-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 2px solid #f0f0f0; flex-shrink: 0; }
+.cart-drawer-title { font-size: 16px; font-weight: 700; color: #1a1a1a; display: flex; align-items: center; gap: 8px; }
+.cart-drawer-title svg { color: #1a3a6b; }
+.cart-close { background: none; border: none; cursor: pointer; color: #888; padding: 4px; border-radius: 50%; transition: background .15s, color .15s; display: flex; }
+.cart-close:hover { background: #f0f0f0; color: #333; }
+.cart-drawer-body { flex: 1; overflow-y: auto; padding: 16px 24px; }
+.cart-item { display: flex; align-items: center; gap: 14px; padding: 14px 0; border-bottom: 1px solid #f0f0f0; }
+.cart-item:last-child { border-bottom: none; }
+.cart-item-img { width: 60px; height: 60px; object-fit: cover; border-radius: 6px; border: 1px solid #eee; flex-shrink: 0; }
+.cart-item-info { flex: 1; }
+.cart-item-name { font-size: 13px; font-weight: 700; color: #222; margin-bottom: 3px; }
+.cart-item-code { font-size: 11px; color: #aaa; margin-bottom: 6px; }
+.cart-item-qty { font-size: 12px; color: #666; }
+.cart-item-qty span { font-weight: 700; color: #1a3a6b; }
+.cart-item-remove { background: none; border: none; cursor: pointer; color: #ccc; padding: 4px; border-radius: 50%; transition: color .15s, background .15s; display: flex; flex-shrink: 0; }
+.cart-item-remove:hover { color: #e74c3c; background: #fff0f0; }
+.cart-empty { text-align: center; padding: 48px 20px; color: #bbb; }
+.cart-empty svg { margin: 0 auto 12px; opacity: .3; }
+.cart-empty p { font-size: 14px; }
+.cart-drawer-footer { padding: 20px 24px; border-top: 2px solid #f0f0f0; flex-shrink: 0; display: flex; flex-direction: column; gap: 10px; }
+.cart-footer-info { display: flex; justify-content: space-between; font-size: 13px; color: #666; }
+.cart-footer-info strong { color: #1a3a6b; }
+.btn-ver-cotacao { display: flex; align-items: center; justify-content: center; gap: 8px; background: #1a3a6b; color: #fff; border: none; padding: 13px; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; transition: background .2s; width: 100%; letter-spacing: .3px; }
+.btn-ver-cotacao:hover { background: #2a52a0; }
+.btn-continuar { display: flex; align-items: center; justify-content: center; gap: 8px; background: #fff; color: #1a3a6b; border: 2px solid #1a3a6b; padding: 11px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: background .2s; width: 100%; }
+.btn-continuar:hover { background: #f0f4ff; }
+.cart-text { display: flex; flex-direction: column; line-height: 1.3; }
+.cart-label { font-weight: 700; font-size: 13px; color: #1a3a6b; }
+.cart-count { font-size: 11px; color: #888; }
+
+/* DRAWER — ADD PRODUCTS */
+.cart-drawer-add-footer { padding: 16px 24px; border-top: 2px solid #f0f0f0; flex-shrink: 0; }
+.btn-add-products { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; background: #fff; color: #1a3a6b; border: 2px solid #1a3a6b; padding: 11px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; transition: background .2s, color .2s; }
+.btn-add-products:hover, .btn-add-products.active { background: #1a3a6b; color: #fff; }
+.drawer-search-panel { overflow: hidden; max-height: 0; transition: max-height .3s ease; }
+.drawer-search-panel.open { max-height: 400px; }
+.drawer-search-input { width: 100%; border: 1.5px solid #ddd; border-radius: 8px; padding: 10px 14px; font-size: 13px; outline: none; margin-top: 12px; }
+.drawer-search-input:focus { border-color: #1a3a6b; }
+.drawer-search-results { margin-top: 6px; max-height: 260px; overflow-y: auto; border-radius: 8px; border: 1px solid #eee; display: none; }
+.drawer-search-results.has-results { display: block; }
+.drawer-search-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; cursor: pointer; border-bottom: 1px solid #f5f5f5; transition: background .15s; }
+.drawer-search-item:last-child { border-bottom: none; }
+.drawer-search-item:hover { background: #f0f4ff; }
+.drawer-search-item img { width: 40px; height: 40px; object-fit: cover; border-radius: 5px; border: 1px solid #eee; flex-shrink: 0; }
+.drawer-search-item-info { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.drawer-item-name { font-size: 12px; font-weight: 700; color: #222; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.drawer-item-code { font-size: 11px; color: #aaa; }
+.drawer-search-add { background: #1a3a6b; color: #fff; border: none; border-radius: 50%; width: 28px; height: 28px; font-size: 20px; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background .15s; }
+.drawer-search-add:hover { background: #2a52a0; }
+.drawer-no-results { padding: 14px; text-align: center; font-size: 12px; color: #aaa; margin: 0; }
+
+/* NAV */
+.nav { background: #1a1a1a; position: sticky; top: 0; z-index: 100; }
+.nav-inner { max-width: 1200px; margin: 0 auto; padding: 0 16px; display: flex; align-items: stretch; justify-content: space-between; }
+.nav-left { display: flex; align-items: stretch; }
+.nav-item { display: flex; align-items: center; gap: 7px; color: #fff; padding: 13px 16px; font-size: 13px; font-weight: 600; letter-spacing: .5px; transition: background .15s; white-space: nowrap; }
+.nav-item:hover { background: #2a2a2a; }
+.nav-produtos { background: #2a3fa0; }
+.nav-produtos:hover { background: #3350c0; }
+.nav-right { display: flex; align-items: center; }
+.nav-fav { display: flex; align-items: center; gap: 6px; color: #ccc; padding: 13px 16px; font-size: 13px; transition: color .15s; }
+.nav-fav:hover { color: #fff; }
+
+/* BANNER */
+.banner { position: relative; width: 100%; max-height: 320px; overflow: hidden; }
+.banner-img { width: 100%; height: 320px; object-fit: cover; display: block; filter: brightness(.65); }
+.banner-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+.banner-title { font-size: 48px; font-weight: 700; color: #fff; letter-spacing: 3px; text-shadow: 0 2px 12px rgba(0,0,0,.5); text-align: center; }
+
+/* BREADCRUMB */
+.breadcrumb-bar { background: #ffffff; border-bottom: 1px solid #e5e5e5; padding: 10px 0; }
+.breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #888; }
+.breadcrumb a { color: #1a3a6b; }
+.breadcrumb a:hover { text-decoration: underline; }
+
+/* MAIN */
+.main { padding: 32px 0 48px; }
+.layout-sidebar-content { display: flex; gap: 28px; align-items: flex-start; }
+
+/* SIDEBAR */
+.sidebar { width: 240px; flex-shrink: 0; }
+.sidebar-block { background: #fff; border: 1px solid #e5e5e5; border-radius: 6px; padding: 18px; margin-bottom: 18px; }
+.sidebar-title { font-size: 14px; font-weight: 700; color: #1a1a1a; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 2px solid #1a3a6b; text-transform: uppercase; letter-spacing: .5px; }
+.sidebar-list li { margin-bottom: 6px; }
+.sidebar-list a { color: #444; font-size: 13px; display: flex; justify-content: space-between; padding: 4px 0; transition: color .15s; }
+.sidebar-list a:hover { color: #1a3a6b; }
+.sidebar-list .count { color: #aaa; font-size: 12px; }
+.range-slider { width: 100%; accent-color: #1a3a6b; margin-bottom: 8px; }
+.price-labels { display: flex; justify-content: space-between; font-size: 12px; color: #666; margin-bottom: 10px; }
+.btn-filter { background: #1a3a6b; color: #fff; border: none; padding: 7px 18px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600; }
+.btn-filter:hover { background: #2a52a0; }
+.sidebar-banner { padding: 0; overflow: hidden; position: relative; }
+.sidebar-banner img { width: 100%; height: 130px; object-fit: cover; filter: brightness(.7); }
+.sidebar-banner-text { position: absolute; bottom: 14px; left: 14px; color: #fff; display: flex; flex-direction: column; line-height: 1.3; }
+.sidebar-banner-text strong { font-size: 16px; }
+
+/* PRODUCT GRID */
+.content-area { flex: 1; }
+.content-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid #e5e5e5; }
+.results-count { font-size: 13px; color: #666; }
+.sort-row { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #555; }
+.select-sort { border: 1px solid #ddd; border-radius: 4px; padding: 5px 10px; font-size: 13px; outline: none; cursor: pointer; }
+.product-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; max-width: 900px; margin: 0 auto; }
+.product-card { background: #fff; border: 1px solid #e5e5e5; border-radius: 8px; overflow: hidden; cursor: pointer; transition: box-shadow .2s, transform .2s; }
+.product-card:hover { box-shadow: 0 6px 24px rgba(0,0,0,.12); transform: translateY(-2px); }
+.product-img-wrap { position: relative; overflow: hidden; background: #f8f8f8; }
+.product-img-wrap img { width: 100%; height: 200px; object-fit: cover; transition: transform .3s; }
+.product-card:hover .product-img-wrap img { transform: scale(1.05); }
+.product-badge { position: absolute; top: 10px; left: 10px; background: #1a3a6b; color: #fff; font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 3px; letter-spacing: .5px; }
+.product-badge-promo { background: #e74c3c; }
+.product-actions { position: absolute; top: 8px; right: 8px; display: flex; flex-direction: column; gap: 6px; opacity: 0; transition: opacity .2s; }
+.product-card:hover .product-actions { opacity: 1; }
+.action-btn { background: #fff; border: 1px solid #ddd; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #555; transition: background .15s, color .15s; }
+.action-btn:hover { background: #1a3a6b; color: #fff; border-color: #1a3a6b; }
+.product-info { padding: 14px; }
+.product-code { font-size: 11px; color: #aaa; display: block; margin-bottom: 4px; }
+.product-name { font-size: 14px; font-weight: 600; color: #222; margin-bottom: 6px; line-height: 1.4; }
+.product-min { font-size: 12px; color: #e67e22; font-weight: 600; margin-bottom: 8px; }
+.card-qty-row { display: flex; align-items: center; gap: 0; margin-bottom: 10px; }
+.card-qty-btn { background: #f0f0f0; border: 1.5px solid #ddd; width: 30px; height: 32px; font-size: 16px; line-height: 1; cursor: pointer; color: #444; display: flex; align-items: center; justify-content: center; transition: background .15s; flex-shrink: 0; }
+.card-qty-btn:first-child { border-radius: 5px 0 0 5px; border-right: none; }
+.card-qty-btn:last-child  { border-radius: 0 5px 5px 0; border-left: none; }
+.card-qty-btn:hover { background: #e0e0e0; }
+.card-qty-input { width: 52px; height: 32px; border: 1.5px solid #ddd; text-align: center; font-size: 13px; font-weight: 700; color: #1a3a6b; outline: none; }
+.card-qty-input::-webkit-outer-spin-button, .card-qty-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+.card-qty-label { font-size: 11px; color: #999; margin-left: 8px; }
+.btn-orcamento { display: block; width: 100%; text-align: center; background: #1a3a6b; color: #fff; padding: 9px 12px; border-radius: 5px; font-size: 12px; font-weight: 700; letter-spacing: .3px; transition: background .2s; border: none; cursor: pointer; }
+.btn-orcamento:hover { background: #2a52a0; }
+
+/* PAGINATION */
+.pagination { display: flex; justify-content: center; gap: 6px; margin-top: 32px; }
+.page-btn { width: 36px; height: 36px; border: 1px solid #ddd; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 14px; color: #444; transition: background .15s, color .15s; }
+.page-btn:hover, .page-active { background: #1a3a6b; color: #fff; border-color: #1a3a6b; }
+
+/* FOOTER */
+.footer { background: #1a1a1a; }
+.footer-top { padding: 40px 0; }
+.footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1.5fr; gap: 32px; }
+.footer-logo { margin-bottom: 14px; }
+.footer-col p, .footer-col a { font-size: 13px; color: #aaa; line-height: 1.8; }
+.footer-col h4 { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 2px solid #2a52a0; }
+.footer-col ul li { margin-bottom: 6px; }
+.footer-col a:hover { color: #fff; }
+.footer-social { display: flex; gap: 10px; margin-top: 14px; }
+.social-icon { width: 34px; height: 34px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #ccc; transition: background .15s; }
+.social-icon:hover { background: #2a52a0; color: #fff; }
+.btn-whatsapp-footer { display: inline-flex; align-items: center; gap: 6px; background: #25D366; color: #fff; padding: 8px 16px; border-radius: 4px; font-size: 13px; font-weight: 600; margin-top: 10px; }
+.btn-whatsapp-footer:hover { background: #1da851; }
+.footer-bottom { background: #111; padding: 14px 0; text-align: center; }
+.footer-bottom p { font-size: 12px; color: #666; }
+
+@media (max-width: 768px) {
+  .layout-sidebar-content { flex-direction: column; }
+  .sidebar { width: 100%; }
+  .topbar-center { display: none; }
+  .header-inner { flex-wrap: wrap; }
+  .search-form { order: 3; max-width: 100%; width: 100%; }
+  .banner-title { font-size: 28px; }
+  .product-grid { grid-template-columns: repeat(2, 1fr); }
+  .footer-grid { grid-template-columns: 1fr; }
+}
+  </style>
+</head>
+<body>
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="topbar-inner">
+      <span class="topbar-phone">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.29 6.29l.91-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        (34) 3235-4163
+      </span>
+      <div class="topbar-right">
+        <a href="https://wa.me/5534920002591" target="_blank" class="btn-whatsapp">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
+          Falar no WhatsApp
+        </a>
+        <span class="topbar-no-revenda">atendemos clientes finais e revenda</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="header-logo-group">
+        <a href="home.html" class="logo">
+        </a>
+        <img src="../Logo-Grafica-Saga-1.webp" style="width: 120px; height: auto;" alt="Gráfica Saga" />
+      </div>
+      <div class="search-wrapper">
+        <form class="search-form" action="#" style="flex:1;display:flex;max-width:none;margin:0;">
+          <input type="text" id="searchInput" class="search-input" placeholder="Buscar por nome ou código..." autocomplete="off" />
+          <button type="submit" class="search-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            Buscar
+          </button>
+        </form>
+        <div class="search-dropdown" id="searchDropdown"></div>
+      </div>
+      <button class="header-cart" onclick="toggleCart()" id="cartBtn">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1a3a6b" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <div class="cart-text">
+          <span class="cart-label">Cesta de Orçamento</span>
+          <span class="cart-count" id="cartCount">0 itens</span>
+        </div>
+      </button>
+    </div>
+  </header>
+
+  <!-- NAV -->
+  <nav class="nav">
+    <div class="nav-inner">
+      <div class="nav-left">
+        <a href="home.html" class="nav-item nav-produtos">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          PRODUTOS
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </a>
+        <a href="#" class="nav-item" onclick="abrirContato(event)">Contato</a>
+      </div>
+      <div class="nav-right">
+        <a href="#" class="nav-fav">
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- BANNER -->
+  <section class="banner">
+    <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=1400&q=80" alt="Agendas e Cadernos" class="banner-img" />
+    <div class="banner-overlay">
+      <h1 class="banner-title">CATÁLOGO</h1>
+    </div>
+
+  </section>
+
+<!-- BREADCRUMB -->
+  <div class="breadcrumb-bar">
+    <div class="container">
+      <nav class="breadcrumb">
+        <a href="#">Home</a><span>/</span>
+        <a href="#">Produtos</a><span>/</span>
+        <span>Agendas e Cadernos</span>
+      </nav>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="container">
+      <div class="layout-sidebar-content" style="justify-content:center">
+
+          <div class="product-grid" style="width:100%">
+
+            <div class="product-card">
+              <div class="product-img-wrap" onclick="location.href='../product.html?id=IMP-0001'" style="cursor:pointer">
+                <img src="AGENDA.png" alt="Agenda Executiva" />
+                <div class="product-badge">NOVO</div>
+                <div class="product-actions">
+                  <button class="action-btn" onclick="location.href='../product.html?id=IMP-0001'"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                </div>
+              </div>
+              <div class="product-info">
+                <span class="product-code">Cód: IMP-0001</span>
+                <h4 class="product-name">Agenda Executiva Personalizada</h4>
+                <p class="product-min">Mín. 10 unidades</p>
+                <div class="card-qty-row" onclick="event.stopPropagation()">
+                  <button class="card-qty-btn" onclick="cardQty('IMP-0001',-10)">−</button>
+                  <input id="qty-IMP-0001" class="card-qty-input" type="number" value="10" min="10" oninput="setCardQty('IMP-0001',this.value)" onclick="event.stopPropagation()" />
+                  <button class="card-qty-btn" onclick="cardQty('IMP-0001',10)">+</button>
+                  <span class="card-qty-label">unidades</span>
+                </div>
+                <button class="btn-orcamento" onclick="abrirMiolo('IMP-0001','Agenda Executiva Personalizada','AGENDA.png')">Solicitar Orçamento</button>
+              </div>
+            </div>
+
+            <div class="product-card">
+              <div class="product-img-wrap" onclick="location.href='../product.html?id=IMP-0002'" style="cursor:pointer">
+                <img src="CADERNO.png" alt="Caderno Capa Dura" />
+                <div class="product-actions">
+                  <button class="action-btn" onclick="location.href='../product.html?id=IMP-0002'"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                </div>
+              </div>
+              <div class="product-info">
+                <span class="product-code">Cód: IMP-0002</span>
+                <h4 class="product-name">Caderno Capa Dura A5</h4>
+                <p class="product-min">Mín. 10 unidades</p>
+                <div class="card-qty-row" onclick="event.stopPropagation()">
+                  <button class="card-qty-btn" onclick="cardQty('IMP-0002',-10)">−</button>
+                  <input id="qty-IMP-0002" class="card-qty-input" type="number" value="10" min="10" oninput="setCardQty('IMP-0002',this.value)" onclick="event.stopPropagation()" />
+                  <button class="card-qty-btn" onclick="cardQty('IMP-0002',10)">+</button>
+                  <span class="card-qty-label">unidades</span>
+                </div>
+                <button class="btn-orcamento" onclick="abrirMiolo('IMP-0002','Caderno Capa Dura A5','CADERNO.png')">Solicitar Orçamento</button>
+              </div>
+            </div>
+
+
+
+          </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-top">
+      <div class="container footer-grid">
+        <div class="footer-col">
+        </div>
+        <div class="footer-col">
+          <h4>Navegação</h4>
+          <ul>
+            <li><a href="#">Produtos</a></li>
+            <li><a href="#" onclick="abrirContato(event)">Contato</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Contato</h4>
+          <p>(34) 3235-4163</p>
+          <p>vendas@graficasaga.com</p>
+          <p>Av. Afonso Pena, 3268 – Bairro Brasil, Uberlândia – MG</p>
+          <p>Seg–Sex: 8h–18h</p>
+          <a href="https://wa.me/5534920002591" target="_blank" class="btn-whatsapp-footer">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
+            WhatsApp
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container">
+        <p>&copy; 2025 Grafica Saga. Todos os direitos reservados.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- CART OVERLAY -->
+  <div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+
+  <!-- CART DRAWER -->
+  <div class="cart-drawer" id="cartDrawer">
+    <div class="cart-drawer-header">
+      <div class="cart-drawer-title">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        Cesta de Orçamento
+        <span style="font-weight:400;color:#aaa;font-size:13px" id="drawerCount">(0 itens)</span>
+      </div>
+      <button class="cart-close" onclick="closeCart()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <div class="cart-drawer-body" id="cartBody">
+      <div class="cart-empty" id="cartEmpty">
+        <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <p>Sua cesta está vazia.</p>
+      </div>
+    </div>
+
+    <div class="cart-drawer-footer" id="cartDrawerFooter" style="display:none">
+      <button class="btn-ver-cotacao" onclick="irParaCotacao()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        Ver Cotação
+      </button>
+      <button class="btn-continuar" onclick="closeCart()">Continuar adicionando</button>
+    </div>
+
+    <div class="cart-drawer-add-footer">
+      <button class="btn-add-products" id="btnAddProducts" onclick="toggleDrawerSearch()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Adicionar Produtos
+      </button>
+      <div class="drawer-search-panel" id="drawerSearchPanel">
+        <input type="text" id="drawerSearchInput" class="drawer-search-input" placeholder="Buscar por nome ou código..." oninput="searchDrawer(this.value)" autocomplete="off" />
+        <div class="drawer-search-results" id="drawerSearchResults"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="../cart.js"></script>
+  <script>
+    var _REMOVE_BTN = '<button class="cart-item-remove" onclick="removeCartItem(this)" title="Remover"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M9 6V4h6v2"/></svg></button>';
+    var _EMPTY_HTML = '<div class="cart-empty" id="cartEmpty"><svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg><p>Sua cesta está vazia.</p></div>';
+
+    function renderCart() {
+      var items = Cart.getAll();
+      var body = document.getElementById('cartBody');
+      if (!items.length) {
+        body.innerHTML = _EMPTY_HTML;
+      } else {
+        body.innerHTML = items.map(function (item) {
+          return '<div class="cart-item" data-cid="' + item.code + '">' +
+            '<img class="cart-item-img" src="' + item.img + '" alt="' + item.name + '" />' +
+            '<div class="cart-item-info">' +
+              '<div class="cart-item-name">' + item.name + '</div>' +
+              '<div class="cart-item-code">Cód: ' + item.code + '</div>' +
+              '<div class="cart-item-qty">Qtd: <span>' + item.qty + '</span> unid.</div>' +
+            '</div>' + _REMOVE_BTN + '</div>';
+        }).join('');
+      }
+      syncCount();
+    }
+
+    function irParaCotacao() {
+      var items = Cart.getAll();
+      var url = '../quote.html';
+      if (items.length) url += '?c=' + encodeURIComponent(JSON.stringify(items));
+      location.href = url;
+    }
+
+    function toggleCart() {
+      var isOpen = document.getElementById('cartDrawer').classList.toggle('open');
+      document.getElementById('cartOverlay').classList.toggle('open');
+      if (isOpen) renderCart();
+    }
+
+    function closeCart() {
+      document.getElementById('cartDrawer').classList.remove('open');
+      document.getElementById('cartOverlay').classList.remove('open');
+    }
+
+    var qtds = { 'IMP-0001': 10, 'IMP-0002': 10 };
+
+    function cardQty(code, delta) {
+      qtds[code] = Math.max(10, (qtds[code] || 10) + delta);
+      document.getElementById('qty-' + code).value = qtds[code];
+    }
+
+    function setCardQty(code, val) {
+      var n = parseInt(val);
+      qtds[code] = (!n || n < 10) ? 10 : n;
+    }
+
+    var _mioloData = {};
+
+    function abrirMiolo(code, name, imgSrc) {
+      _mioloData = { code: code, name: name, imgSrc: imgSrc };
+      var sel = document.getElementById('mioloSelect');
+      sel.value = '';
+      sel.style.borderColor = '';
+      document.getElementById('mioloErro').style.display = 'none';
+      document.getElementById('mioloProdNome').textContent = name;
+      document.getElementById('mioloOverlay').style.display = 'flex';
+    }
+
+    function fecharMiolo(e) {
+      if (!e || e.target === document.getElementById('mioloOverlay'))
+        document.getElementById('mioloOverlay').style.display = 'none';
+    }
+
+    function confirmarMiolo() {
+      var sel = document.getElementById('mioloSelect');
+      if (!sel.value) {
+        sel.style.borderColor = '#e74c3c';
+        document.getElementById('mioloErro').style.display = 'block';
+        sel.focus();
+        return;
+      }
+      var nomeCompleto = _mioloData.name + ' – ' + sel.options[sel.selectedIndex].text;
+      var qty = qtds[_mioloData.code] || 10;
+      Cart.add({ code: _mioloData.code, name: nomeCompleto, img: _mioloData.imgSrc, qty: qty });
+      document.getElementById('mioloOverlay').style.display = 'none';
+      renderCart();
+      document.getElementById('cartDrawer').classList.add('open');
+      document.getElementById('cartOverlay').classList.add('open');
+    }
+
+    function addToCart(code, name, imgSrc) {
+      var qty = qtds[code] || 10;
+      Cart.add({ code: code, name: name, img: imgSrc, qty: qty });
+      renderCart();
+      document.getElementById('cartDrawer').classList.add('open');
+      document.getElementById('cartOverlay').classList.add('open');
+    }
+
+    function removeCartItem(btn) {
+      var item = btn.closest('.cart-item');
+      var code = item.dataset.cid;
+      item.style.transition = 'opacity .2s, transform .2s';
+      item.style.opacity = '0';
+      item.style.transform = 'translateX(20px)';
+      setTimeout(function () { Cart.remove(code); renderCart(); }, 200);
+    }
+
+    function syncCount() {
+      var n = Cart.getAll().length;
+      document.getElementById('cartCount').textContent = n + (n === 1 ? ' item' : ' itens');
+      document.getElementById('drawerCount').textContent = '(' + n + (n === 1 ? ' item)' : ' itens)');
+      document.getElementById('cartDrawerFooter').style.display = n > 0 ? '' : 'none';
+    }
+
+    renderCart();
+
+    function toggleDrawerSearch() {
+      var panel = document.getElementById('drawerSearchPanel');
+      var btn = document.getElementById('btnAddProducts');
+      var isOpen = panel.classList.toggle('open');
+      btn.classList.toggle('active', isOpen);
+      if (isOpen) {
+        setTimeout(function () { document.getElementById('drawerSearchInput').focus(); }, 310);
+      } else {
+        document.getElementById('drawerSearchInput').value = '';
+        var r = document.getElementById('drawerSearchResults');
+        r.innerHTML = '';
+        r.classList.remove('has-results');
+      }
+    }
+
+    function searchDrawer(q) {
+      var results = document.getElementById('drawerSearchResults');
+      if (!q.trim()) {
+        results.innerHTML = '';
+        results.classList.remove('has-results');
+        return;
+      }
+      if (typeof CATALOGO === 'undefined') {
+        results.innerHTML = '<p class="drawer-no-results">Catálogo não disponível.</p>';
+        results.classList.add('has-results');
+        return;
+      }
+      var q2 = q.toLowerCase();
+      var matches = CATALOGO.filter(function (p) {
+        return p.nome.toLowerCase().indexOf(q2) >= 0 || p.codigo.toLowerCase().indexOf(q2) >= 0;
+      }).slice(0, 6);
+      if (!matches.length) {
+        results.innerHTML = '<p class="drawer-no-results">Nenhum produto encontrado.</p>';
+      } else {
+        results.innerHTML = matches.map(function (p) {
+          var esc = p.nome.replace(/"/g, '&quot;');
+          return '<div class="drawer-search-item" data-code="' + p.codigo + '" data-name="' + esc + '" data-img="' + p.img + '" onclick="addFromDrawer(this)">' +
+            '<img src="' + p.img + '" alt="' + esc + '" />' +
+            '<div class="drawer-search-item-info">' +
+              '<span class="drawer-item-name">' + p.nome + '</span>' +
+              '<span class="drawer-item-code">' + p.codigo + '</span>' +
+            '</div>' +
+            '<button class="drawer-search-add" onclick="event.stopPropagation();addFromDrawer(this.closest(\'.drawer-search-item\'))">+</button>' +
+          '</div>';
+        }).join('');
+      }
+      results.classList.add('has-results');
+    }
+
+    function addFromDrawer(el) {
+      Cart.add({ code: el.dataset.code, name: el.dataset.name, img: el.dataset.img, qty: 10 });
+      renderCart();
+      el.style.background = '#e8f5e9';
+      setTimeout(function () { if (el.parentNode) el.style.background = ''; }, 500);
+    }
+  </script>
+
+  <!-- POPUP MIOLO -->
+  <div id="mioloOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:2000;align-items:center;justify-content:center;" onclick="fecharMiolo(event)">
+    <div style="background:#fff;width:420px;max-width:94vw;border-radius:12px;padding:36px 40px;position:relative;box-shadow:0 8px 40px rgba(0,0,0,.2);">
+      <button onclick="fecharMiolo()" style="position:absolute;top:14px;right:18px;background:none;border:none;font-size:22px;cursor:pointer;color:#888;">&times;</button>
+      <h2 style="font-size:17px;font-weight:700;color:#1a3a6b;margin-bottom:6px;">Acabamento do Miolo</h2>
+      <p id="mioloProdNome" style="font-size:13px;color:#888;margin-bottom:20px;"></p>
+      <label style="font-size:13px;font-weight:600;color:#333;display:block;margin-bottom:8px;">Selecione o tipo de miolo: <span style="color:#e74c3c">*</span></label>
+      <select id="mioloSelect" onchange="this.style.borderColor='';document.getElementById('mioloErro').style.display='none'" style="width:100%;border:2px solid #ddd;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;color:#333;appearance:none;cursor:pointer;">
+        <option value="">Selecione o acabamento do miolo</option>
+        <option value="pautado">Miolo Pautado (com linhas para escrita)</option>
+        <option value="spauta">Miolo S/Pauta (sem linhas, folha lisa)</option>
+      </select>
+      <p id="mioloErro" style="display:none;color:#e74c3c;font-size:12px;margin-top:6px;font-weight:600;">⚠ Selecione o acabamento do miolo antes de continuar.</p>
+      <button onclick="confirmarMiolo()" style="width:100%;background:#1a3a6b;color:#fff;border:none;padding:13px;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;margin-top:18px;transition:background .2s;" onmouseover="this.style.background='#2a52a0'" onmouseout="this.style.background='#1a3a6b'">Adicionar à Cesta</button>
+    </div>
+  </div>
+
+  <!-- POPUP CONTATO -->
+  <div id="contatoOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:2000;align-items:center;justify-content:center;" onclick="fecharContato(event)">
+    <div style="background:#fff;width:60%;max-width:700px;border-radius:12px;padding:40px 48px;position:relative;box-shadow:0 8px 40px rgba(0,0,0,.2);">
+      <button onclick="document.getElementById('contatoOverlay').style.display='none'" style="position:absolute;top:16px;right:20px;background:none;border:none;font-size:22px;cursor:pointer;color:#888;">&times;</button>
+      <h2 style="font-size:20px;font-weight:700;color:#1a3a6b;margin-bottom:28px;border-bottom:2px solid #e8e8e8;padding-bottom:14px;">Entre em Contato</h2>
+      <div style="display:flex;flex-direction:column;gap:18px;font-size:15px;color:#333;">
+        <div style="display:flex;align-items:center;gap:14px;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1a3a6b" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.29 6.29l.91-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          <span><strong>Telefone:</strong> (34) 3235-4163</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" style="color:#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
+          <span><strong>WhatsApp:</strong> <a href="https://wa.me/5534920002591" target="_blank" style="color:#25D366;font-weight:600;">(34) 92000-2591</a></span>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1a3a6b" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          <span><strong>E-mail:</strong> <a href="mailto:vendas@graficasaga.com" style="color:#1a3a6b;">vendas@graficasaga.com</a></span>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:14px;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1a3a6b" stroke-width="2" style="flex-shrink:0;margin-top:2px"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span><strong>Endereço:</strong> Av. Afonso Pena, 3268 – Bairro Brasil, Uberlândia – MG, 38400-710</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1a3a6b" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span><strong>Horário:</strong> Seg–Sex, 8h às 18h</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    function abrirContato(e) { e.preventDefault(); var o = document.getElementById('contatoOverlay'); o.style.display = 'flex'; }
+    function fecharContato(e) { if (e.target === document.getElementById('contatoOverlay')) document.getElementById('contatoOverlay').style.display = 'none'; }
+  </script>
+  <script>window.SEARCH_PRODUCT_BASE = '../product.html';</script>
+  <script src="../search.js"></script>
+</body>
+</html>
