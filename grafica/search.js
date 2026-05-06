@@ -61,7 +61,7 @@
     if (typeof window.searchOnSelect === 'function') {
       window.searchOnSelect(p);
     } else {
-      var base = window.SEARCH_PRODUCT_BASE || 'product.html';
+      var base = window.SEARCH_PRODUCT_BASE || './product.html';
       location.href = base + '?id=' + p.codigo;
     }
   };
