@@ -122,8 +122,8 @@ input, select, button { font-family: inherit; }
 .nav-fav:hover { color: #fff; }
 
 /* BANNER */
-.banner { position: relative; width: 100%; max-height: 320px; overflow: hidden; }
-.banner-img { width: 100%; height: 320px; object-fit: cover; display: block; filter: brightness(.65); }
+.banner { position: relative; width: 100%; max-height: 340px; overflow: hidden; }
+.banner-img { width: 100%; height: 350px; object-fit: cover; display: block; filter: brightness(.65); }
 .banner-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
 .banner-title { font-size: 48px; font-weight: 700; color: #fff; letter-spacing: 3px; text-shadow: 0 2px 12px rgba(0,0,0,.5); text-align: center; }
 
@@ -246,7 +246,7 @@ input, select, button { font-family: inherit; }
       <div class="header-logo-group">
         <a href="home.html" class="logo">
         </a>
-        <img src="../Logo-Grafica-Saga-1.webp" style="width: 120px; height: auto;" alt="Gráfica Saga" />
+        <img src="Logo-Grafica-Saga-1.webp" style="width: 120px; height: auto;" alt="Gráfica Saga" />
       </div>
       <div class="search-wrapper">
         <form class="search-form" action="#" style="flex:1;display:flex;max-width:none;margin:0;">
@@ -288,7 +288,7 @@ input, select, button { font-family: inherit; }
 
   <!-- BANNER -->
   <section class="banner">
-    <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=1400&q=80" alt="Agendas e Cadernos" class="banner-img" />
+    <img src="Banner.png" alt="Agendas e Cadernos" class="banner-img" />
     <div class="banner-overlay">
       <h1 class="banner-title">CATÁLOGO</h1>
     </div>
@@ -314,11 +314,11 @@ input, select, button { font-family: inherit; }
           <div class="product-grid" style="width:100%">
 
             <div class="product-card">
-              <div class="product-img-wrap" onclick="location.href='../product.html?id=IMP-0001'" style="cursor:pointer">
+              <div class="product-img-wrap" onclick="location.href='./product.html?id=IMP-0001'" style="cursor:pointer">
                 <img src="AGENDA.png" alt="Agenda Executiva" />
                 <div class="product-badge">NOVO</div>
                 <div class="product-actions">
-                  <button class="action-btn" onclick="location.href='../product.html?id=IMP-0001'"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                  <button class="action-btn" onclick="location.href='./product.html?id=IMP-0001'"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
                 </div>
               </div>
               <div class="product-info">
@@ -336,10 +336,10 @@ input, select, button { font-family: inherit; }
             </div>
 
             <div class="product-card">
-              <div class="product-img-wrap" onclick="location.href='../product.html?id=IMP-0002'" style="cursor:pointer">
+              <div class="product-img-wrap" onclick="location.href='./product.html?id=IMP-0002'" style="cursor:pointer">
                 <img src="CADERNO.png" alt="Caderno Capa Dura" />
                 <div class="product-actions">
-                  <button class="action-btn" onclick="location.href='../product.html?id=IMP-0002'"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                  <button class="action-btn" onclick="location.href='./product.html?id=IMP-0002'"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
                 </div>
               </div>
               <div class="product-info">
@@ -353,6 +353,26 @@ input, select, button { font-family: inherit; }
                   <span class="card-qty-label">unidades</span>
                 </div>
                 <button class="btn-orcamento" onclick="abrirMiolo('IMP-0002','Caderno Capa Dura A5','CADERNO.png')">Solicitar Orçamento</button>
+              </div>
+            </div>
+                        <div class="product-card">
+              <div class="product-img-wrap" onclick="location.href='./product.html?id=IMP-0003'" style="cursor:pointer">
+                <img src="Molesquine.png" alt="Caderno Capa Dura" />
+                <div class="product-actions">
+                  <button class="action-btn" onclick="location.href='./product.html?id=IMP-0003'"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                </div>
+              </div>
+              <div class="product-info">
+                <span class="product-code">Cód: IMP-0003</span>
+                <h4 class="product-name">Molesquines Personalidos</h4>
+                <p class="product-min">Mín. 10 unidades</p>
+                <div class="card-qty-row" onclick="event.stopPropagation()">
+                  <button class="card-qty-btn" onclick="cardQty('IMP-0003',-10)">−</button>
+                  <input id="qty-IMP-0002" class="card-qty-input" type="number" value="10" min="10" oninput="setCardQty('IMP-0003',this.value)" onclick="event.stopPropagation()" />
+                  <button class="card-qty-btn" onclick="cardQty('IMP-0003',10)">+</button>
+                  <span class="card-qty-label">unidades</span>
+                </div>
+                <button class="btn-orcamento" onclick="abrirMiolo('IMP-0003','Molesquine Personalidos','.png')">Solicitar Orçamento</button>
               </div>
             </div>
 
@@ -440,7 +460,7 @@ input, select, button { font-family: inherit; }
 
   </div>
 
-  <script src="../cart.js"></script>
+  <script src="cart.js"></script>
   <script>
     var _REMOVE_BTN = '<button class="cart-item-remove" onclick="removeCartItem(this)" title="Remover"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M9 6V4h6v2"/></svg></button>';
     var _EMPTY_HTML = '<div class="cart-empty" id="cartEmpty"><svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg><p>Sua cesta está vazia.</p></div>';
@@ -466,7 +486,7 @@ input, select, button { font-family: inherit; }
 
     function irParaCotacao() {
       var items = Cart.getAll();
-      var url = '../quote.html';
+      var url = 'quote.html';
       if (items.length) url += '?c=' + encodeURIComponent(JSON.stringify(items));
       location.href = url;
     }
@@ -661,7 +681,7 @@ input, select, button { font-family: inherit; }
     function abrirContato(e) { e.preventDefault(); var o = document.getElementById('contatoOverlay'); o.style.display = 'flex'; }
     function fecharContato(e) { if (e.target === document.getElementById('contatoOverlay')) document.getElementById('contatoOverlay').style.display = 'none'; }
   </script>
-  <script>window.SEARCH_PRODUCT_BASE = '../product.html';</script>
-  <script src="../search.js"></script>
+  <script>window.SEARCH_PRODUCT_BASE = 'product.html';</script>
+  <script src="search.js"></script>
 </body>
 </html>
